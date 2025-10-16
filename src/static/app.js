@@ -94,33 +94,57 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         messageDiv.textContent = result.detail || "An error occurred";
         messageDiv.className = "error";
-      }
-
-      messageDiv.classList.remove("hidden");
-
       // Hide message after 5 seconds
-      setTimeout(() => {
         messageDiv.classList.add("hidden");
-      }, 5000);
-    } catch (error) {
-      messageDiv.textContent = "Failed to unregister. Please try again.";
-      messageDiv.className = "error";
       messageDiv.classList.remove("hidden");
-      console.error("Error unregistering:", error);
     }
-  }
-
   // Handle form submission
-  signupForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const email = document.getElementById("email").value;
+        if (filtered.length === 0) {
+          activitiesList.innerHTML = '<p><em>No activities found.</em></p>';
+          return;
+        }
     const activity = document.getElementById("activity").value;
+        // Populate activities list
+        filtered.forEach(([name, details]) => {
+          const activityCard = document.createElement("div");
+          activityCard.className = "activity-card";
 
+          const spotsLeft = details.max_participants - (details.participants ? details.participants.length : 0);
     try {
+          // Create participants HTML with delete icons instead of bullet points
+          const participantsHTML =
+            details.participants && details.participants.length > 0
+              ? `<div class="participants-section">
+                  <h5>Participants:</h5>
+                  <ul class="participants-list">
+                    ${details.participants
+                      .map(
+                        (email) =>
+                          `<li><span class="participant-email">${email}</span><button class="delete-btn" data-activity="${name}" data-email="${email}">❌</button></li>`
+                      )
+                      .join("")}
+                  </ul>
+                </div>`
+              : `<p><em>No participants yet</em></p>`;
       const response = await fetch(
+          activityCard.innerHTML = `
+            <h4>${name}</h4>
+            <p>${details.description}</p>
+            <p><strong>Category:</strong> ${details.category || "-"}</p>
+            <p><strong>Schedule:</strong> ${details.schedule}</p>
+            <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
+            <div class="participants-container">
+              ${participantsHTML}
+            </div>
+          `;
         `/activities/${encodeURIComponent(
+          activitiesList.appendChild(activityCard);
+        });
           activity
+        // Add event listeners to delete buttons
+        document.querySelectorAll(".delete-btn").forEach((button) => {
+          button.addEventListener("click", handleUnregister);
+        });
         )}/signup?email=${encodeURIComponent(email)}`,
         {
           method: "POST",
