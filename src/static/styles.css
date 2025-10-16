@@ -1,3 +1,21 @@
+/* Filters bar styles */
+#filters-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+#filters-bar label {
+  font-weight: bold;
+}
+#filters-bar select,
+#filters-bar input[type="text"] {
+  padding: 6px 10px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  font-size: 15px;
+}
 * {
   box-sizing: border-box;
   margin: 0;
